@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Buckeye TacMed - Medical Readiness Action Plan</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#3D4A2E;--navy2:#4a5a38;--red:#8B1A1A;--red2:#a52020;--gold:#B8860B;--gold2:#d4a017;--white:#1C1C1A;--muted:#5a5a50;--border:rgba(184,134,11,0.3);--input-bg:#FFFFFF;--green:#2d6a2d;--amber:#9a6a0a;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#FFFFFF;color:#1C1C1A;font-family:'Barlow',sans-serif;font-weight:300;min-height:100vh;}
+.site-header{background:#3D4A2E;border-bottom:2px solid var(--gold);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;}
+.header-left{display:flex;align-items:center;gap:12px;}
+.header-right{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(244,241,232,0.6);}
+.site-name{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:18px;letter-spacing:0.08em;text-transform:uppercase;color:#F4F1E8;}
+.site-name span{color:var(--gold);}
+.wrap{max-width:600px;margin:0 auto;padding:24px 16px 80px;background:#FFFFFF;}
+.section-head{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:#8B1A1A;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid rgba(139,26,26,0.25);}
+.field-block{margin-bottom:28px;}
+label{display:block;font-size:12px;font-weight:500;color:#5a5a50;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;}
+input[type="text"],textarea,select{width:100%;background:#FFFFFF;border:1px solid rgba(0,0,0,0.18);border-radius:5px;color:#1C1C1A;font-family:'Barlow',sans-serif;font-size:15px;padding:10px 14px;outline:none;transition:border-color 0.2s;-webkit-appearance:none;}
+input[type="text"]:focus,textarea:focus,select:focus{border-color:var(--gold);}
+textarea{resize:vertical;min-height:72px;line-height:1.6;}
+select option{background:#FFFFFF;color:#1C1C1A;}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+/* Section toggles */
+.section-toggle{display:flex;align-items:center;gap:12px;background:#F4F1E8;border:1px solid var(--border);border-radius:6px;padding:12px 16px;margin-bottom:8px;cursor:pointer;user-select:none;transition:border-color 0.15s;}
+.section-toggle.active{border-color:var(--gold);background:rgba(184,134,11,0.12);}
+.toggle-check{width:22px;height:22px;border:1.5px solid rgba(255,255,255,0.2);border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.15s;font-size:13px;}
+.section-toggle.active .toggle-check{background:var(--gold);border-color:var(--gold);color:#3D4A2E;font-weight:700;}
+.toggle-label{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:600;letter-spacing:0.05em;color:#1C1C1A;}
+.toggle-sub{font-size:12px;color:#5a5a50;margin-top:2px;}
+/* Threat table */
+.threat-table{width:100%;border-collapse:collapse;margin-bottom:8px;}
+.threat-table th{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#8B1A1A;padding:8px 10px;border-bottom:1px solid var(--border);text-align:left;}
+.threat-table td{padding:8px 10px;border-bottom:1px solid rgba(0,0,0,0.07);font-size:14px;vertical-align:middle;}
+.threat-table tr:last-child td{border-bottom:none;}
+.yn-row{display:flex;gap:6px;}
+.yn-btn{padding:4px 12px;border:1px solid rgba(255,255,255,0.15);border-radius:4px;background:transparent;color:#5a5a50;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.15s;}
+.yn-btn.yes-active{background:var(--red);border-color:var(--red);color:#fff;}
+.yn-btn.no-active{background:var(--green);border-color:var(--green);color:#fff;}
+.risk-select{padding:4px 8px;font-size:13px;width:110px;}
+/* Vulnerability checklists */
+.vuln-section{background:#F4F1E8;border:1px solid rgba(0,0,0,0.1);border-radius:6px;padding:14px 16px;margin-bottom:12px;}
+.vuln-section-title{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#3D4A2E;margin-bottom:10px;}
+.vuln-item{display:flex;align-items:flex-start;gap:10px;padding:7px 0;border-bottom:1px solid rgba(0,0,0,0.07);}
+.vuln-item:last-child{border-bottom:none;padding-bottom:0;}
+.vuln-check{width:20px;height:20px;border:1.5px solid rgba(0,0,0,0.25);border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;margin-top:1px;transition:all 0.15s;}
+.vuln-check.checked{background:var(--red);border-color:var(--red);}
+.vuln-check.checked::after{content:"\2713";color:#fff;font-size:12px;font-weight:700;}
+.vuln-label{font-size:13px;color:#1C1C1A;line-height:1.4;flex:1;cursor:pointer;}
+/* Recs table */
+.rec-row{display:grid;grid-template-columns:2fr 80px 100px 100px;gap:8px;align-items:center;margin-bottom:8px;}
+.rec-row.header{margin-bottom:4px;}
+.rec-header{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#5a5a50;}
+.rec-row input,.rec-row select{font-size:13px;padding:7px 10px;}
+.add-rec-btn{background:transparent;border:1px dashed rgba(184,134,11,0.5);color:#B8860B;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;letter-spacing:0.06em;border-radius:5px;padding:8px 16px;cursor:pointer;width:100%;margin-top:4px;transition:background 0.15s;}
+.add-rec-btn:hover{background:rgba(184,134,11,0.08);}
+/* Facility */
+.facility-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.facility-item{background:#F4F1E8;border:1px solid rgba(0,0,0,0.1);border-radius:5px;padding:10px 12px;}
+.facility-item label{margin-bottom:5px;}
+/* Submit */
+.generate-btn{width:100%;background:var(--red);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;border:none;border-radius:6px;padding:18px;cursor:pointer;margin-top:8px;transition:background 0.2s;}
+.generate-btn:hover{background:var(--red2);}
+.generate-btn:disabled{background:#444;cursor:not-allowed;}
+.hint{font-size:12px;color:#5a5a50;text-align:center;margin-top:10px;}
+.spin{display:inline-block;animation:spin 0.8s linear infinite;}
+.vuln-expand{display:none;margin-top:8px;padding:10px 12px;background:#FFFFFF;border-radius:5px;border-left:3px solid #8B1A1A;box-shadow:0 1px 3px rgba(0,0,0,0.08);}
+.vuln-item.flagged .vuln-expand{display:block;}
+.vuln-item.flagged{background:rgba(139,26,26,0.06);}
+.vuln-expand textarea{font-size:12px;padding:7px 10px;min-height:56px;margin-bottom:8px;}
+.vuln-expand-label{font-size:10px;font-weight:600;color:#5a5a50;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:5px;}
+.vuln-photo-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.vuln-photo-btn{background:transparent;border:1px dashed rgba(184,134,11,0.5);color:#B8860B;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:600;letter-spacing:0.05em;border-radius:4px;padding:5px 12px;cursor:pointer;transition:background 0.15s;}
+.vuln-photo-btn:hover{background:rgba(184,134,11,0.08);}
+.vuln-photo-input{display:none;}
+.vuln-thumb-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;}
+.vuln-thumb{position:relative;width:52px;height:52px;border-radius:4px;overflow:hidden;border:1px solid rgba(0,0,0,0.15);}
+.vuln-thumb img{width:100%;height:100%;object-fit:cover;}
+.vuln-thumb-remove{position:absolute;top:1px;right:1px;width:16px;height:16px;background:rgba(192,57,43,0.85);border:none;border-radius:50%;color:#fff;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;padding:0;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+#printReport{display:none;}
+@media print{
+  body > *{display:none !important;}
+  #printReport{display:block !important;}
+  .rpt-cover{page-break-after:always;min-height:100vh;display:flex;flex-direction:column;}
+  .rpt-cover-header{background:#3D4A2E;padding:28px 36px;display:flex;align-items:center;gap:18px;}
+  .rpt-cover-banner{background:#8B1A1A;padding:26px 36px;text-align:center;}
+  .rpt-cover-title{font-size:24px;font-weight:900;letter-spacing:0.08em;text-transform:uppercase;color:#fff;}
+  .rpt-cover-sub{font-size:11px;color:rgba(255,255,255,0.8);margin-top:5px;}
+  .rpt-cover-body{flex:1;padding:36px;}
+  .rpt-confidential{padding:16px 36px;font-size:9px;color:#888;font-style:italic;border-top:1px solid #E0DDD4;text-align:center;}
+  .rpt-info{width:100%;border-collapse:collapse;}
+  .rpt-info tr td{padding:9px 12px;border-bottom:1px solid #E0DDD4;font-size:11px;color:#1C1C1A;}
+  .rpt-info-lbl{font-weight:700;color:#3D4A2E;width:140px;text-transform:uppercase;font-size:9px;letter-spacing:0.08em;background:#F4F1E8;}
+  .rpt-section{margin-bottom:20px;page-break-inside:avoid;}
+  #printReport h2{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#3D4A2E;background:#F4F1E8;padding:7px 12px;border-left:4px solid #B8860B;margin-bottom:10px;}
+  #printReport p{font-size:10.5px;line-height:1.6;margin-bottom:8px;color:#1C1C1A;}
+  #printReport ul{padding-left:18px;margin-bottom:8px;}
+  #printReport ul li{font-size:10.5px;line-height:1.6;margin-bottom:3px;color:#1C1C1A;}
+  #printReport table{width:100%;border-collapse:collapse;margin-bottom:10px;font-size:10px;}
+  #printReport th{background:#3D4A2E;color:#B8860B;font-size:8.5px;text-transform:uppercase;letter-spacing:0.08em;padding:6px 9px;text-align:left;}
+  #printReport tr:nth-child(even) td{background:#F4F1E8;}
+  #printReport td{padding:6px 9px;border-bottom:1px solid #E8E5DC;vertical-align:top;font-size:10px;color:#1C1C1A;}
+  .rpt-finding{display:flex;gap:8px;align-items:flex-start;background:#FFF5F5;border-left:3px solid #8B1A1A;padding:6px 9px;margin-bottom:4px;}
+  .rpt-dot{width:5px;height:5px;border-radius:50%;background:#8B1A1A;margin-top:4px;flex-shrink:0;}
+  .rpt-ftxt{font-weight:600;font-size:10.5px;color:#1C1C1A;}
+  .rpt-fcmt{font-style:italic;color:#5a5a50;font-size:9.5px;margin-top:2px;}
+  .rpt-sig-grid{display:grid;grid-template-columns:1fr 1fr;gap:36px;margin-top:16px;}
+  .rpt-sig-role{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#5a5a50;margin-bottom:4px;}
+  .rpt-sig-name{font-size:10.5px;font-weight:600;color:#1C1C1A;margin-bottom:10px;}
+  .rpt-sig-line{border-bottom:1px solid #3D4A2E;height:32px;margin-bottom:4px;}
+  .rpt-sig-lbl{font-size:8.5px;color:#888;text-transform:uppercase;letter-spacing:0.06em;}
+}
+
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:100;align-items:center;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal-box{background:#FFFFFF;border-radius:10px;padding:28px 24px;width:90%;max-width:400px;border-top:4px solid #8B1A1A;box-shadow:0 8px 32px rgba(0,0,0,0.18);}
+.modal-title{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#3D4A2E;margin-bottom:6px;}
+.modal-sub{font-size:12px;color:#5a5a50;margin-bottom:18px;line-height:1.5;}
+.modal-box label{font-size:11px;font-weight:600;color:#5a5a50;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:5px;}
+.modal-box input[type="text"]{width:100%;background:#F4F1E8;border:1px solid rgba(0,0,0,0.15);border-radius:5px;color:#1C1C1A;font-family:'Barlow',sans-serif;font-size:15px;padding:10px 14px;outline:none;margin-bottom:16px;}
+.modal-box input[type="text"]:focus{border-color:#B8860B;}
+.modal-btn-row{display:flex;gap:10px;margin-top:4px;}
+.modal-send-btn{flex:1;background:#8B1A1A;color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;border:none;border-radius:6px;padding:12px;cursor:pointer;}
+.modal-send-btn:hover{background:#a52020;}
+.modal-cancel-btn{background:transparent;border:1.5px solid rgba(0,0,0,0.15);color:#5a5a50;font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;border-radius:6px;padding:12px 18px;cursor:pointer;}
+.modal-cancel-btn:hover{background:#F4F1E8;}
+</style>
+</head>
+<body>
+<header class="site-header">
+  <div class="header-left">
+    <img src="data:image/png;base64,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" alt="Buckeye TacMed" style="height:38px;width:auto;flex-shrink:0;" />
+    <div class="site-name">Buckeye <span>TacMed</span></div>
+  </div>
+  <div class="header-right">Medical Readiness Action Plan (MRAP)</div>
+</header>
+
+<div class="wrap">
+
+  <!-- CLIENT INFO -->
+  <div class="field-block">
+    <div class="section-head">Assessment Information</div>
+    <div class="field-row" style="margin-bottom:10px;">
+      <div><label>Client / Company Name *</label><input type="text" id="clientName" placeholder="Acme Corp" /></div>
+      <div><label>Location *</label><input type="text" id="clientLocation" placeholder="123 Main St, Columbus OH" /></div>
+    </div>
+    <div class="field-row" style="margin-bottom:10px;">
+      <div><label>Client Contact Name</label><input type="text" id="contactName" placeholder="John Smith" /></div>
+      <div><label>Client Contact Title</label><input type="text" id="contactTitle" placeholder="Safety Manager" /></div>
+    </div>
+    <div class="field-row">
+      <div><label>Prepared By</label><input type="text" id="preparedBy" value="Buckeye TacMed" /></div>
+      <div><label>Assessment Date</label><input type="text" id="assessDate" id="assessDate" readonly style="color:#5a5a50;" /></div>
+    </div>
+  </div>
+
+  <!-- SECTION SELECTOR -->
+  <div class="field-block">
+    <div class="section-head">Select Applicable Sections</div>
+    <div id="sectionToggles"></div>
+  </div>
+
+  <!-- THREAT IDENTIFICATION -->
+  <div class="field-block form-section" id="sec-threats" style="display:none;">
+    <div class="section-head">Threat Identification</div>
+    <table class="threat-table">
+      <thead><tr><th>Threat Category</th><th>Identified Risk</th><th>Risk Level</th><th>Notes</th></tr></thead>
+      <tbody id="threatTableBody"></tbody>
+    </table>
+  </div>
+
+  <!-- FACILITY & EQUIPMENT -->
+  <div class="field-block form-section" id="sec-facility" style="display:none;">
+    <div class="section-head">Facility &amp; Equipment Assessment</div>
+    <div class="facility-grid" id="facilityGrid"></div>
+  </div>
+
+  <!-- STAFF & TRAINING -->
+  <div class="field-block form-section" id="sec-training" style="display:none;">
+    <div class="section-head">Staff &amp; Training</div>
+    <div id="trainingGrid"></div>
+  </div>
+
+  <!-- VULNERABILITY CHECKLISTS -->
+  <div class="field-block form-section" id="sec-vuln-active" style="display:none;">
+    <div class="section-head">Active Shooter Vulnerability</div>
+    <div id="vuln-active"></div>
+  </div>
+  <div class="field-block form-section" id="sec-vuln-fire" style="display:none;">
+    <div class="section-head">Fire &amp; Evacuation Vulnerability</div>
+    <div id="vuln-fire"></div>
+  </div>
+  <div class="field-block form-section" id="sec-vuln-access" style="display:none;">
+    <div class="section-head">First Responder Access Vulnerability</div>
+    <div id="vuln-access"></div>
+  </div>
+  <div class="field-block form-section" id="sec-vuln-hazmat" style="display:none;">
+    <div class="section-head">HazMat Exposure Vulnerability</div>
+    <div id="vuln-hazmat"></div>
+  </div>
+  <div class="field-block form-section" id="sec-vuln-medical" style="display:none;">
+    <div class="section-head">Medical Emergency Vulnerability</div>
+    <div id="vuln-medical"></div>
+  </div>
+  <div class="field-block form-section" id="sec-vuln-wv" style="display:none;">
+    <div class="section-head">Workplace Violence Vulnerability</div>
+    <div id="vuln-wv"></div>
+  </div>
+
+  <!-- RECOMMENDATIONS -->
+  <div class="field-block form-section" id="sec-recs" style="display:none;">
+    <div class="section-head">Risk Treatment Recommendations</div>
+    <div class="rec-row header">
+      <div class="rec-header">Recommendation</div>
+      <div class="rec-header">Priority</div>
+      <div class="rec-header">Timeframe</div>
+      <div class="rec-header">Cost Est.</div>
+    </div>
+    <div id="recsContainer"></div>
+    <button class="add-rec-btn" onclick="addRec()">+ Add Recommendation</button>
+  </div>
+
+  <!-- NOTES -->
+  <div class="field-block">
+    <div class="section-head">Additional Notes &amp; Executive Summary</div>
+    <label>Summary / observations for the report</label>
+    <textarea id="execNotes" placeholder="Overall findings, context, or anything to highlight in the executive summary..."></textarea>
+  </div>
+
+  <!-- GENERATE -->
+  <div class="field-block">
+    <button class="generate-btn" id="generateBtn" onclick="generatePDF()">Generate PDF Report</button>
+    <button class="generate-btn" onclick="openEmailModal()" style="margin-top:10px;background:#3D4A2E;">Email Report to Client</button>
+    <div class="hint">Generate PDF to print or save &nbsp;|&nbsp; Email opens your mail app pre-filled</div>
+  </div>
+
+</div>
+
+<script>
+var LOGO_B64 = "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";
+
+var SECTIONS = [
+  {id:"threats",    label:"Threat Identification",              sub:"Workplace violence, active shooter, medical emergencies, natural disasters"},
+  {id:"facility",   label:"Facility and Equipment Assessment",  sub:"Emergency exits, AEDs, trauma kits, comms"},
+  {id:"training",   label:"Staff and Training",                 sub:"CPR, Stop the Bleed, incident command"},
+  {id:"vuln-active",label:"Active Shooter Vulnerability",       sub:"Preparedness, security, comms, coordination"},
+  {id:"vuln-fire",  label:"Fire and Evacuation Vulnerability",  sub:"Equipment, evacuation plan, drills, layout risks"},
+  {id:"vuln-access",label:"First Responder Access Vulnerability",sub:"Building access, site info, comms, navigation"},
+  {id:"vuln-hazmat",label:"HazMat Exposure Assessment",         sub:"Chemical storage, SDS, PPE, spill response"},
+  {id:"vuln-medical",label:"Medical Emergency Vulnerability",   sub:"Training, equipment, response plans, environmental"},
+  {id:"vuln-wv",    label:"Workplace Violence Vulnerability",   sub:"Access control, policies, culture, physical layout"},
+  {id:"recs",       label:"Risk Treatment Recommendations",     sub:"Priority actions with timeframes and cost estimates"}
+];var THREATS = [  "Workplace Violence","Active Shooter","Medical Emergency (Cardiac, Trauma, OD)",  "Natural Disasters","Fire & Evacuation","HazMat Exposure","First Responder Access"];var VULN = {  active:[    {g:"Preparedness & Training",items:["No active shooter response policy","Employees have not been trained in Run/Hide/Fight","No drills conducted within the last 12 months","Staff unfamiliar with lockdown procedures"]},    {g:"Communication & Notification",items:["No mass-notification or alert system","No PA system or unreliable communication channels","No designated emergency coordinator"]},    {g:"Physical Security",items:["Doors cannot be locked from inside","Rooms lack secondary exit routes","Windows or glass walls not reinforced","No security cameras or gaps in camera coverage"]},    {g:"Emergency Coordination",items:["No contact or coordination plan with local law enforcement","No site map or floor plan available for first responders"]}  ],  fire:[    {g:"Fire Safety Equipment",items:["Fire extinguishers missing or not accessible","Fire extinguishers not inspected annually","Smoke or heat detectors not functioning","No sprinkler or suppression system"]},    {g:"Evacuation Planning",items:["No fire evacuation plan posted","Exit routes not clearly marked","Exits blocked or cluttered","No assigned evacuation coordinators"]},    {g:"Training & Drills",items:["No fire drills conducted in past 12 months","Employees unfamiliar with evacuation routes","No accountability procedure once evacuated"]},    {g:"Facility Layout Risks",items:["High occupancy areas with limited exits","Locked doors or restricted egress points","Flammable materials stored improperly"]}  ],  access:[    {g:"Access to Building & Grounds",items:["No clearly marked building entrances","Access gates locked or require manual unlocking","First responders cannot access key areas without escort","Parking lot obstructs emergency vehicle access","Loading docks or doors blocked"]},    {g:"Building Information",items:["No building map or floor plans available","No Knox Box / secure key access for fire/EMS","No utility shutoff maps (gas, electric, water)","No designated command post location"]},    {g:"Communication & Coordination",items:["No emergency contact list for first responders","No pre-planning done with local fire/EMS/law enforcement","Difficulty communicating inside facility (dead zones)","No designated staff liaison for responders"]},    {g:"Internal Navigation",items:["Hallways or paths cluttered","Stairwells locked or inaccessible","Poor signage for rooms, exits, or high-risk areas","No lighting for nighttime response"]},    {g:"Site Hazards",items:["Hazmat locations not marked for responders","Machinery or equipment blocking responder movement","Confined spaces not labeled","Areas with limited or no egress"]}  ],  hazmat:[    {g:"HazMat Assessment",items:["Hazardous chemicals stored onsite","No updated chemical inventory available","SDS not accessible to employees","Hazardous materials not clearly labeled","No designated hazmat storage area","Improper storage (incompatible materials stored together)","Poor or insufficient ventilation in storage/use areas","Spill containment measures inadequate or missing","No eyewash or emergency shower stations","Employees not trained in chemical handling","PPE unavailable, inadequate, or not utilized","No hazmat spill response plan","No hazmat cleanup or spill control kits onsite","No coordination with local fire/hazmat teams","Chemical exposure risk present in public or high-traffic areas","No air monitoring or gas detection for leak-risk environments"]}  ],  medical:[    {g:"Training & Personnel",items:["No CPR/AED/First Aid trained personnel on staff","No Stop The Bleed-trained employees","No designated medical emergency team"]},    {g:"Equipment",items:["No AED onsite","AED not centrally located or easily accessible","Medical kits missing critical supplies","No bleeding control kits (tourniquets, pressure dressings, etc.)"]},    {g:"Response Plans",items:["No medical emergency response plan","No clear process for calling EMS","No internal emergency notification method","No employee medical information or emergency contacts available"]},    {g:"Environmental Risks",items:["Trip/fall hazards present","High-risk machinery or tools without safety controls","Temperature extremes or environmental hazards"]}  ],  wv:[    {g:"Security & Access Control",items:["Facility has unrestricted access points","No visitor check-in or badge system","Employees can enter without ID verification","No panic buttons or duress alarms","Parking areas are poorly lit or unsecured"]},    {g:"Policies & Reporting",items:["No formal workplace violence policy in place","Employees not trained on warning signs or reporting options","No anonymous reporting method","History of unreported or unresolved incidents"]},    {g:"Staffing & Culture",items:["High-stress work environment","Staff shortages or role overload","Poor conflict-resolution culture","Recent terminations or downsizing"]},    {g:"Physical Layout",items:["No secure separation between public and employee spaces"]}  ]};var FACILITY_FIELDS = [  {id:"f_exits",    label:"Emergency Exits",         opts:["Adequate","Needs Improvement","Not Evaluated"]},  {id:"f_kits",     label:"First Aid Kits",          opts:["Present","Absent","Inadequate"]},  {id:"f_aed",      label:"AED Devices",             opts:["Yes","No"]},  {id:"f_aed_num",  label:"# of AED Units",          type:"text", placeholder:"e.g. 2"},  {id:"f_trauma",   label:"Trauma Kits (Stop the Bleed)", opts:["Yes","No"]},  {id:"f_incident", label:"Incident Reporting System",opts:["Yes","No","Needs Update"]},  {id:"f_comms",    label:"Emergency Communications", opts:["Functional","Lacking"]}];var TRAINING_FIELDS = [  {id:"t_cpr",      label:"CPR/First Aid Certified Staff",     type:"text", placeholder:"Number or % of staff"},  {id:"t_bls",      label:"BLS/ALS Level Trained",            opts:["Yes","No"]},  {id:"t_stb",      label:"Stop the Bleed Certified",         opts:["Yes","No"]},  {id:"t_ics",      label:"Incident Command Structure in Place",opts:["Yes","No"]},  {id:"t_drill",    label:"Last Emergency Drill",             type:"text", placeholder:"Date or 'Never'"}];var vulnState = {};var threatState = {};var activeSections = {};var recs = [  {text:"Conduct CPR / BLS Training",priority:"High",timeframe:"30 days",cost:""},  {text:"Install or update AED units",priority:"Medium",timeframe:"60 days",cost:""},  {text:"Add Stop the Bleed Kits",priority:"High",timeframe:"15 days",cost:""},  {text:"Develop Medical Action Plan (MAP)",priority:"High",timeframe:"2 weeks",cost:""},  {text:"Conduct Scenario-Based Drills",priority:"Medium",timeframe:"Semi-Annually",cost:""},  {text:"Create Incident Reporting SOP",priority:"Medium",timeframe:"30 days",cost:""}];function handleVulnPhotos(itemKey, files) {
+  if (!vulnState[itemKey]) return;
+  for (var i = 0; i < files.length; i++) {
+    if (vulnState[itemKey].photos.length >= 5) break;
+    (function(file, key) {
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        vulnState[key].photos.push(e.target.result);
+        renderVulnThumbs(key);
+      };
+      reader.readAsDataURL(file);
+    })(files[i], itemKey);
+  }
+}
+
+function renderVulnThumbs(itemKey) {
+  var container = document.getElementById("thumbs-" + itemKey);
+  if (!container) return;
+  container.innerHTML = "";
+  var photos = vulnState[itemKey].photos;
+  for (var i = 0; i < photos.length; i++) {
+    (function(idx) {
+      var thumb = document.createElement("div");
+      thumb.className = "vuln-thumb";
+      var img = document.createElement("img");
+      img.src = photos[idx];
+      var btn = document.createElement("button");
+      btn.className = "vuln-thumb-remove";
+      btn.textContent = "x";
+      btn.onclick = function(e) {
+        e.stopPropagation();
+        vulnState[itemKey].photos.splice(idx, 1);
+        renderVulnThumbs(itemKey);
+      };
+      thumb.appendChild(img);
+      thumb.appendChild(btn);
+      container.appendChild(thumb);
+    })(i);
+  }
+}
+
+function init() {  var now = new Date();  document.getElementById("assessDate").value = now.toLocaleDateString("en-US",{year:"numeric",month:"long",day:"numeric"});  buildSectionToggles();  buildThreatTable();  buildFacility();  buildTraining();  buildVulnSections();  buildRecs();}function buildSectionToggles() {  var el = document.getElementById("sectionToggles");  el.innerHTML = "";
+  for (var i = 0; i < SECTIONS.length; i++) {
+    (function(sec) {
+      activeSections[sec.id] = false;
+      var div = document.createElement("div");
+      div.className = "section-toggle";
+      div.setAttribute("data-id", sec.id);
+      var chkDiv = document.createElement("div");
+      chkDiv.className = "toggle-check";
+      var infoDiv = document.createElement("div");
+      var labelDiv = document.createElement("div");
+      labelDiv.className = "toggle-label";
+      labelDiv.textContent = sec.label;
+      var subDiv = document.createElement("div");
+      subDiv.className = "toggle-sub";
+      subDiv.textContent = sec.sub;
+      infoDiv.appendChild(labelDiv);
+      infoDiv.appendChild(subDiv);
+      div.appendChild(chkDiv);
+      div.appendChild(infoDiv);
+      div.addEventListener("click", function() { toggleSection(sec.id); });
+      el.appendChild(div);
+    })(SECTIONS[i]);
+  }
+}
+
+function toggleSection(id) {
+  activeSections[id] = !activeSections[id];
+  var toggle = document.querySelector(".section-toggle[data-id='" + id + "']");
+  if (!toggle) return;
+  toggle.classList.toggle("active", activeSections[id]);
+  var chk = toggle.querySelector(".toggle-check");
+  if (chk) chk.textContent = activeSections[id] ? "OK" : "";
+  var formSec = document.getElementById("sec-" + id);
+  if (formSec) formSec.style.display = activeSections[id] ? "block" : "none";
+}
+
+function buildThreatTable() {
+  var tbody = document.getElementById("threatTableBody");
+  tbody.innerHTML = "";
+  for (var i = 0; i < THREATS.length; i++) {
+    (function(threat, idx) {
+      threatState[idx] = {yn:"", risk:"", notes:""};
+      var tr = document.createElement("tr");
+      tr.innerHTML = "<td style='font-size:13px;'>" + threat + "</td>" +
+        "<td><div class='yn-row'><button class='yn-btn' data-t='" + idx + "' data-v='Yes'>Yes</button><button class='yn-btn' data-t='" + idx + "' data-v='No'>No</button></div></td>" +
+        "<td><select class='risk-select' data-t='" + idx + "'><option value=''>--</option><option>Low</option><option>Medium</option><option>High</option></select></td>" +
+        "<td><input type='text' placeholder='Notes...' data-t='" + idx + "' data-f='notes' style='font-size:12px;padding:5px 8px;' /></td>";
+      tbody.appendChild(tr);
+      var yns = tr.querySelectorAll(".yn-btn");
+      for (var j = 0; j < yns.length; j++) {
+        yns[j].addEventListener("click", function(e) {
+          var t = parseInt(e.target.getAttribute("data-t"));
+          var v = e.target.getAttribute("data-v");
+          threatState[t].yn = v;
+          var btns = tr.querySelectorAll(".yn-btn");
+          btns[0].className = "yn-btn" + (v==="Yes"?" yes-active":"");
+          btns[1].className = "yn-btn" + (v==="No"?" no-active":"");
+        });
+      }
+      tr.querySelector(".risk-select").addEventListener("change", function(e) {
+        threatState[idx].risk = e.target.value;
+      });
+      tr.querySelector("input[data-f='notes']").addEventListener("input", function(e) {
+        threatState[idx].notes = e.target.value;
+      });
+    })(THREATS[i], i);
+  }
+}
+
+function buildFacility() {
+  var el = document.getElementById("facilityGrid");
+  el.innerHTML = "";
+  for (var i = 0; i < FACILITY_FIELDS.length; i++) {
+    var f = FACILITY_FIELDS[i];
+    var div = document.createElement("div");
+    div.className = "facility-item";
+    var inner = "<label>" + f.label + "</label>";
+    if (f.type === "text") {
+      inner += "<input type='text' id='" + f.id + "' placeholder='" + (f.placeholder||"") + "' />";
+    } else {
+      inner += "<select id='" + f.id + "'><option value=''>--</option>";
+      for (var j = 0; j < f.opts.length; j++) inner += "<option>" + f.opts[j] + "</option>";
+      inner += "</select>";
+    }
+    div.innerHTML = inner;
+    el.appendChild(div);
+  }
+}
+
+function buildTraining() {
+  var el = document.getElementById("trainingGrid");
+  el.innerHTML = "";
+  for (var i = 0; i < TRAINING_FIELDS.length; i++) {
+    var f = TRAINING_FIELDS[i];
+    var div = document.createElement("div");
+    div.style.cssText = "margin-bottom:10px;";
+    var inner = "<label>" + f.label + "</label>";
+    if (f.type === "text") {
+      inner += "<input type='text' id='" + f.id + "' placeholder='" + (f.placeholder||"") + "' />";
+    } else {
+      inner += "<select id='" + f.id + "'><option value=''>--</option>";
+      for (var j = 0; j < f.opts.length; j++) inner += "<option>" + f.opts[j] + "</option>";
+      inner += "</select>";
+    }
+    div.innerHTML = inner;
+    el.appendChild(div);
+  }
+}
+
+function buildVulnSections() {
+  var keys = ["active","fire","access","hazmat","medical","wv"];
+  var elIds = ["vuln-active","vuln-fire","vuln-access","vuln-hazmat","vuln-medical","vuln-wv"];
+  for (var k = 0; k < keys.length; k++) {
+    (function(key, elId) {
+      var el = document.getElementById(elId);
+      el.innerHTML = "";
+      var groups = VULN[key];
+      for (var g = 0; g < groups.length; g++) {
+        var grp = groups[g];
+        var box = document.createElement("div");
+        box.className = "vuln-section";
+        var titleDiv = document.createElement("div");
+        titleDiv.className = "vuln-section-title";
+        titleDiv.textContent = grp.g;
+        box.appendChild(titleDiv);
+        for (var ii = 0; ii < grp.items.length; ii++) {
+          (function(itemKey, itemText) {
+            vulnState[itemKey] = {checked: false, comment: "", photos: []};
+            var itemDiv = document.createElement("div");
+            itemDiv.className = "vuln-item";
+            itemDiv.setAttribute("data-key", itemKey);
+            var chkDiv = document.createElement("div");
+            chkDiv.className = "vuln-check";
+            chkDiv.setAttribute("data-key", itemKey);
+            var labelDiv = document.createElement("div");
+            labelDiv.className = "vuln-label";
+            labelDiv.textContent = itemText;
+            var expandDiv = document.createElement("div");
+            expandDiv.className = "vuln-expand";
+            var expLabel1 = document.createElement("div");
+            expLabel1.className = "vuln-expand-label";
+            expLabel1.textContent = "Comment";
+            var expTa = document.createElement("textarea");
+            expTa.placeholder = "Describe this vulnerability...";
+            expTa.id = "cmt-" + itemKey;
+            var expLabel2 = document.createElement("div");
+            expLabel2.className = "vuln-expand-label";
+            expLabel2.textContent = "Photos";
+            var expPhotoRow = document.createElement("div");
+            expPhotoRow.className = "vuln-photo-row";
+            var expPhotoBtn = document.createElement("button");
+            expPhotoBtn.className = "vuln-photo-btn";
+            expPhotoBtn.textContent = "+ Add Photo";
+            var expPhotoInput = document.createElement("input");
+            expPhotoInput.type = "file";
+            expPhotoInput.className = "vuln-photo-input";
+            expPhotoInput.id = "ph-" + itemKey;
+            expPhotoInput.accept = "image/*";
+            expPhotoInput.multiple = true;
+            expPhotoRow.appendChild(expPhotoBtn);
+            expPhotoRow.appendChild(expPhotoInput);
+            var expThumbs = document.createElement("div");
+            expThumbs.className = "vuln-thumb-row";
+            expThumbs.id = "thumbs-" + itemKey;
+            expandDiv.appendChild(expLabel1);
+            expandDiv.appendChild(expTa);
+            expandDiv.appendChild(expLabel2);
+            expandDiv.appendChild(expPhotoRow);
+            expandDiv.appendChild(expThumbs);
+            itemDiv.appendChild(chkDiv);
+            itemDiv.appendChild(labelDiv);
+            itemDiv.appendChild(expandDiv);
+            box.appendChild(itemDiv);
+            function toggle() {
+              vulnState[itemKey].checked = !vulnState[itemKey].checked;
+              chkDiv.classList.toggle("checked", vulnState[itemKey].checked);
+              itemDiv.classList.toggle("flagged", vulnState[itemKey].checked);
+            }
+            chkDiv.addEventListener("click", toggle);
+            labelDiv.addEventListener("click", toggle);
+            var ta = expandDiv.querySelector("textarea");
+            ta.addEventListener("input", function() { vulnState[itemKey].comment = ta.value; });
+            expPhotoBtn.addEventListener("click", function() { expPhotoInput.click(); });
+            expPhotoInput.addEventListener("change", function() {
+              handleVulnPhotos(itemKey, expPhotoInput.files);
+              expPhotoInput.value = "";
+            });
+          })(key + "_" + g + "_" + ii, grp.items[ii]);
+        }
+        el.appendChild(box);
+      }
+    })(keys[k], elIds[k]);
+  }
+}
+
+function buildRecs() {
+  renderRecs();
+}
+
+function renderRecs() {
+  var el = document.getElementById("recsContainer");
+  el.innerHTML = "";
+  for (var i = 0; i < recs.length; i++) {
+    (function(idx) {
+      var div = document.createElement("div");
+      div.className = "rec-row";
+      div.innerHTML =
+        "<input type='text' value='" + recs[idx].text.replace(/'/g,"&#39;") + "' placeholder='Recommendation...' />" +
+        "<select><option value=''>--</option><option" + (recs[idx].priority==="High"?" selected":"") + ">High</option><option" + (recs[idx].priority==="Medium"?" selected":"") + ">Medium</option><option" + (recs[idx].priority==="Low"?" selected":"") + ">Low</option></select>" +
+        "<input type='text' value='" + recs[idx].timeframe + "' placeholder='e.g. 30 days' />" +
+        "<input type='text' value='" + recs[idx].cost + "' placeholder='$' />";
+      div.querySelector("input").addEventListener("input", function(e) { recs[idx].text = e.target.value; });
+      var sels = div.querySelectorAll("select");
+      sels[0].addEventListener("change", function(e) { recs[idx].priority = e.target.value; });
+      var inputs = div.querySelectorAll("input");
+      inputs[1].addEventListener("input", function(e) { recs[idx].timeframe = e.target.value; });
+      inputs[2].addEventListener("input", function(e) { recs[idx].cost = e.target.value; });
+      el.appendChild(div);
+    })(i);
+  }
+}
+
+function addRec() {
+  recs.push({text:"",priority:"",timeframe:"",cost:""});
+  renderRecs();
+}
+
+// -- PDF GENERATION --
+function generatePDF() {
+  var client = document.getElementById("clientName").value.trim();
+  if (!client) { alert("Please enter a client name."); return; }
+  try {
+    buildReportDiv();
+    window.print();
+  } catch(e) {
+    alert("Error: " + e.message);
+    console.error(e);
+  }
+}
+
+function buildReportDiv() {
+  var client   = document.getElementById("clientName").value || "";
+  var loc      = document.getElementById("clientLocation").value || "";
+  var contact  = document.getElementById("contactName").value || "";
+  var title2   = document.getElementById("contactTitle").value || "";
+  var prepBy   = document.getElementById("preparedBy").value || "Buckeye TacMed";
+  var date     = document.getElementById("assessDate").value || "";
+  var notes    = document.getElementById("execNotes").value || "";
+  var el       = document.getElementById("printReport");
+
+  // Build using DOM to avoid string escaping issues
+  var frag = document.createDocumentFragment();
+
+  // Cover
+  var cover = mk("div","rpt-cover");
+  var hdr = mk("div","rpt-cover-header");
+  var logoImg = document.querySelector("header img");
+  if (logoImg) { var li = logoImg.cloneNode(); li.style.height="64px"; li.style.width="auto"; hdr.appendChild(li); }
+  var titleBlk = mk("div","");
+  titleBlk.innerHTML = "<div style='font-size:13px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#B8860B;'>Buckeye TacMed</div><div style='font-size:10px;color:#F4F1E8;opacity:0.8;margin-top:2px;'>Tactical Medical Training and Preparedness</div>";
+  hdr.appendChild(titleBlk);
+  cover.appendChild(hdr);
+
+  var banner = mk("div","rpt-cover-banner");
+  banner.innerHTML = "<div class='rpt-cover-title'>Medical Readiness Action Plan</div><div class='rpt-cover-sub'>MRAP &nbsp;|&nbsp; Risk-Based Medical Readiness Evaluation</div>";
+  cover.appendChild(banner);
+
+  var body = mk("div","rpt-cover-body");
+  var infoTbl = document.createElement("table");
+  infoTbl.className = "rpt-info";
+  var infoRows = [["Client",client],["Location",loc],["Contact",contact+(title2?" | "+title2:"")],["Prepared By",prepBy],["Date",date]];
+  for (var ir = 0; ir < infoRows.length; ir++) {
+    var row = document.createElement("tr");
+    var td1 = document.createElement("td"); td1.className="rpt-info-lbl"; td1.textContent=infoRows[ir][0]; row.appendChild(td1);
+    var td2 = document.createElement("td"); td2.textContent=infoRows[ir][1]; row.appendChild(td2);
+    infoTbl.appendChild(row);
+  }
+  body.appendChild(infoTbl);
+  cover.appendChild(body);
+
+  var conf = mk("div","rpt-confidential");
+  conf.textContent = "This document contains confidential information prepared exclusively for the named client. Do not distribute without authorization from Buckeye TacMed.";
+  cover.appendChild(conf);
+  frag.appendChild(cover);
+
+  // Helper: section with h2
+  function addSection(title) {
+    var s = mk("div","rpt-section"); 
+    var h = document.createElement("h2"); h.textContent = title; s.appendChild(h);
+    frag.appendChild(s); return s;
+  }
+
+  // Executive summary
+  var s1 = addSection("1. Executive Summary");
+  var p1 = document.createElement("p");
+  p1.textContent = notes || "This Medical Readiness Action Plan was conducted to evaluate the organization's preparedness for health-related medical emergencies with a focus on risk-based decision-making as outlined in ISO 31000. The assessment identifies current capabilities, risks, and opportunities for improvement across the domains of medical readiness, emergency response, and employee safety.";
+  s1.appendChild(p1);
+
+  // Objectives
+  var s2 = addSection("2. Objectives of the Assessment");
+  var ul = document.createElement("ul");
+  var objs = ["Identify potential medical threats to employees and visitors","Evaluate the facility's current medical emergency response protocols and equipment","Assess staff medical readiness and training levels","Provide actionable recommendations to mitigate medical risk and enhance resilience","Support compliance and alignment with corporate governance and ISO 31000 standards"];
+  for (var oi = 0; oi < objs.length; oi++) { var li = document.createElement("li"); li.textContent=objs[oi]; ul.appendChild(li); }
+  s2.appendChild(ul);
+
+  var secNum = 3;
+
+  // Threats
+  if (activeSections["threats"]) {
+    var st = addSection(secNum+++". Threat Identification");
+    var tbl = makeTable(["Threat Category","Identified Risk","Risk Level","Notes"]);
+    var tb = tbl.querySelector("tbody");
+    for (var ti = 0; ti < THREATS.length; ti++) {
+      var ts = threatState[ti] || {};
+      var tr2 = document.createElement("tr");
+      if (ti%2===0) tr2.style.background="#F4F1E8";
+      var riskColor = ts.risk==="High"?"#8B1A1A":ts.risk==="Medium"?"#b7770d":ts.risk==="Low"?"#1e7d45":"#333";
+      var ynColor = ts.yn==="Yes"?"#8B1A1A":"#1e7d45";
+      tdAdd(tr2, THREATS[ti]);
+      var td_yn = tdAdd(tr2, ts.yn||"--"); td_yn.style.color=ynColor; td_yn.style.fontWeight="600"; td_yn.style.textAlign="center";
+      var td_r = tdAdd(tr2, ts.risk||"--"); td_r.style.color=riskColor; td_r.style.fontWeight="600"; td_r.style.textAlign="center";
+      tdAdd(tr2, ts.notes||"");
+      tb.appendChild(tr2);
+    }
+    st.appendChild(tbl);
+  }
+
+  // Facility
+  if (activeSections["facility"]) {
+    var sf = addSection(secNum+++". Facility and Equipment Assessment");
+    var ftbl = makeTable([]);
+    var ftb = ftbl.querySelector("tbody");
+    for (var fi = 0; fi < FACILITY_FIELDS.length; fi++) {
+      var fel = document.getElementById(FACILITY_FIELDS[fi].id);
+      var fr = document.createElement("tr");
+      if (fi%2===0) fr.style.background="#F4F1E8";
+      var ftd1 = tdAdd(fr, FACILITY_FIELDS[fi].label); ftd1.style.fontWeight="700"; ftd1.style.color="#3D4A2E"; ftd1.style.width="50%";
+      tdAdd(fr, fel?fel.value||"--":"--");
+      ftb.appendChild(fr);
+    }
+    sf.appendChild(ftbl);
+  }
+
+  // Training
+  if (activeSections["training"]) {
+    var str2 = addSection(secNum+++". Staff and Training");
+    var ttbl = makeTable([]);
+    var ttb = ttbl.querySelector("tbody");
+    for (var tri3 = 0; tri3 < TRAINING_FIELDS.length; tri3++) {
+      var tel2 = document.getElementById(TRAINING_FIELDS[tri3].id);
+      var trr = document.createElement("tr");
+      if (tri3%2===0) trr.style.background="#F4F1E8";
+      var ttd1 = tdAdd(trr, TRAINING_FIELDS[tri3].label); ttd1.style.fontWeight="700"; ttd1.style.color="#3D4A2E"; ttd1.style.width="50%";
+      tdAdd(trr, tel2?tel2.value||"--":"--");
+      ttb.appendChild(trr);
+    }
+    str2.appendChild(ttbl);
+  }
+
+  // Vuln sections
+  var vulnSecs = [
+    {key:"active",  id:"vuln-active",  label:"Active Shooter Vulnerability"},
+    {key:"fire",    id:"vuln-fire",    label:"Fire and Evacuation Vulnerability"},
+    {key:"access",  id:"vuln-access",  label:"First Responder Access Vulnerability"},
+    {key:"hazmat",  id:"vuln-hazmat",  label:"HazMat Exposure Assessment"},
+    {key:"medical", id:"vuln-medical", label:"Medical Emergency Vulnerability"},
+    {key:"wv",      id:"vuln-wv",      label:"Workplace Violence Vulnerability"}
+  ];
+  for (var vs = 0; vs < vulnSecs.length; vs++) {
+    var vsec = vulnSecs[vs];
+    if (!activeSections[vsec.id]) continue;
+    var sv = addSection(vsec.label);
+    var grps = VULN[vsec.key];
+    var flagged = [];
+    for (var vg = 0; vg < grps.length; vg++) {
+      for (var vi = 0; vi < grps[vg].items.length; vi++) {
+        var vkey = vsec.key+"_"+vg+"_"+vi;
+        if (vulnState[vkey] && vulnState[vkey].checked) {
+          flagged.push({text:grps[vg].items[vi], comment:vulnState[vkey].comment||""});
+        }
+      }
+    }
+    if (flagged.length === 0) {
+      var pok = document.createElement("p"); pok.textContent="No vulnerabilities identified in this area."; pok.style.color="#1e7d45"; pok.style.fontStyle="italic"; sv.appendChild(pok);
+    } else {
+      var ph = document.createElement("p"); ph.textContent=flagged.length+" vulnerabilit"+(flagged.length===1?"y":"ies")+" identified:"; ph.style.color="#8B1A1A"; ph.style.fontWeight="600"; ph.style.marginBottom="8px"; sv.appendChild(ph);
+      for (var fl = 0; fl < flagged.length; fl++) {
+        var fd = mk("div","rpt-finding");
+        var dot = mk("div","rpt-dot"); fd.appendChild(dot);
+        var ftxt = document.createElement("div");
+        var fn2 = mk("div","rpt-ftxt"); fn2.textContent=flagged[fl].text; ftxt.appendChild(fn2);
+        if (flagged[fl].comment) { var fc = mk("div","rpt-fcmt"); fc.textContent="Note: "+flagged[fl].comment; ftxt.appendChild(fc); }
+        fd.appendChild(ftxt); sv.appendChild(fd);
+      }
+    }
+  }
+
+  // Recommendations
+  if (activeSections["recs"]) {
+    var sr = addSection("Risk Treatment Recommendations");
+    var rtbl = makeTable(["Recommendation","Priority","Timeframe","Cost Estimate"]);
+    var rtb = rtbl.querySelector("tbody");
+    for (var ri = 0; ri < recs.length; ri++) {
+      if (!recs[ri].text) continue;
+      var rr = document.createElement("tr");
+      if (ri%2===0) rr.style.background="#F4F1E8";
+      var pColor = recs[ri].priority==="High"?"#8B1A1A":recs[ri].priority==="Medium"?"#b7770d":"#1e7d45";
+      tdAdd(rr, recs[ri].text);
+      var ptd = tdAdd(rr, recs[ri].priority||"--"); ptd.style.color=pColor; ptd.style.fontWeight="700"; ptd.style.textAlign="center";
+      var tftd = tdAdd(rr, recs[ri].timeframe||"--"); tftd.style.textAlign="center";
+      var ctd = tdAdd(rr, recs[ri].cost?"$"+recs[ri].cost:"--"); ctd.style.textAlign="center";
+      rtb.appendChild(rr);
+    }
+    sr.appendChild(rtbl);
+  }
+
+  // Monitoring
+  var sm = addSection("Review and Monitoring Plan");
+  var mul = document.createElement("ul");
+  ["Reassessment recommended every 6-12 months","After-action reviews following any incident","Ongoing staff training and refresher courses","Leadership debrief sessions biannually"].forEach(function(t){var li=document.createElement("li");li.textContent=t;mul.appendChild(li);});
+  sm.appendChild(mul);
+
+  // Signatures
+  var ss = mk("div","rpt-section rpt-sig");
+  var sh = document.createElement("h2"); sh.textContent="Signature and Acknowledgement"; ss.appendChild(sh);
+  var sg = mk("div","rpt-sig-grid");
+  function makeSig(role, name) {
+    var d = document.createElement("div");
+    var r = mk("div","rpt-sig-role"); r.textContent=role; d.appendChild(r);
+    var n = mk("div","rpt-sig-name"); n.textContent=name; d.appendChild(n);
+    var l = mk("div","rpt-sig-line"); d.appendChild(l);
+    var lb = mk("div","rpt-sig-lbl"); lb.textContent="Signature                                Date"; d.appendChild(lb);
+    return d;
+  }
+  sg.appendChild(makeSig("Prepared By", prepBy));
+  sg.appendChild(makeSig("Received By (Client)", contact+(title2?" | "+title2:"")||"________________________"));
+  ss.appendChild(sg);
+  frag.appendChild(ss);
+
+  el.innerHTML = "";
+  el.appendChild(frag);
+}
+
+function mk(tag, cls) { var el=document.createElement(tag); if(cls) el.className=cls; return el; }
+function tdAdd(row, txt) { var td=document.createElement("td"); td.textContent=txt; row.appendChild(td); return td; }
+function makeTable(headers) {
+  var t = document.createElement("table");
+  if (headers && headers.length > 0) {
+    var thead = document.createElement("thead");
+    var hr = document.createElement("tr");
+    for (var i = 0; i < headers.length; i++) {
+      var th = document.createElement("th");
+      th.textContent = headers[i];
+      hr.appendChild(th);
+    }
+    thead.appendChild(hr);
+    t.appendChild(thead);
+  }
+  t.appendChild(document.createElement("tbody"));
+  return t;
+}
+
+
+function openEmailModal() {
+  var client = document.getElementById("clientName").value.trim();
+  if (!client) { alert("Please enter a client name first."); return; }
+  // Pre-fill email if client email already entered somewhere
+  document.getElementById("emailModal").classList.add("open");
+  setTimeout(function() { document.getElementById("clientEmailInput").focus(); }, 100);
+}
+
+function closeEmailModal() {
+  document.getElementById("emailModal").classList.remove("open");
+  document.getElementById("clientEmailInput").value = "";
+}
+
+function sendEmailToClient() {
+  var emailAddr = document.getElementById("clientEmailInput").value.trim();
+  if (!emailAddr || emailAddr.indexOf("@") === -1) { alert("Please enter a valid email address."); return; }
+  var client  = document.getElementById("clientName").value || "Client";
+  var loc     = document.getElementById("clientLocation").value || "";
+  var prepBy  = document.getElementById("preparedBy").value || "Buckeye TacMed";
+  var date    = document.getElementById("assessDate").value || "";
+  var contact = document.getElementById("contactName").value || "";
+  var notes   = document.getElementById("execNotes").value || "";
+  var totalFlags = 0;
+  for (var k in vulnState) { if (vulnState[k] && vulnState[k].checked) totalFlags++; }
+  var secNames = [];
+  for (var sid in activeSections) {
+    if (activeSections[sid]) {
+      for (var si = 0; si < SECTIONS.length; si++) {
+        if (SECTIONS[si].id === sid) { secNames.push(SECTIONS[si].label); break; }
+      }
+    }
+  }
+  var highRecs = recs.filter(function(r) { return r.priority === "High" && r.text; });
+  var lines = [];
+  lines.push("Dear " + (contact || client) + ",");
+  lines.push("");
+  lines.push("Please find below a summary of your Medical Readiness Action Plan (MRAP) prepared by " + prepBy + ".");
+  lines.push("");
+  lines.push("ASSESSMENT SUMMARY");
+  lines.push("==================");
+  lines.push("Client:           " + client);
+  lines.push("Location:         " + (loc || "--"));
+  lines.push("Assessment Date:  " + date);
+  lines.push("Prepared By:      " + prepBy);
+  lines.push("");
+  if (secNames.length > 0) {
+    lines.push("SECTIONS ASSESSED");
+    for (var ai = 0; ai < secNames.length; ai++) { lines.push("  - " + secNames[ai]); }
+    lines.push("");
+  }
+  if (totalFlags > 0) {
+    lines.push("VULNERABILITIES IDENTIFIED: " + totalFlags);
+    lines.push("Please review the attached PDF report for full details and remediation steps.");
+    lines.push("");
+  } else {
+    lines.push("No vulnerabilities were flagged during this assessment.");
+    lines.push("");
+  }
+  if (highRecs.length > 0) {
+    lines.push("HIGH PRIORITY RECOMMENDATIONS");
+    for (var ri2 = 0; ri2 < highRecs.length; ri2++) {
+      lines.push("  - " + highRecs[ri2].text + (highRecs[ri2].timeframe ? " (" + highRecs[ri2].timeframe + ")" : ""));
+    }
+    lines.push("");
+  }
+  if (notes) { lines.push("EXECUTIVE SUMMARY"); lines.push(notes); lines.push(""); }
+  lines.push("A full PDF report will be provided separately for your records and signature.");
+  lines.push("");
+  lines.push("Please do not hesitate to reach out with any questions.");
+  lines.push("");
+  lines.push("Best regards,");
+  lines.push(prepBy);
+  lines.push("Buckeye TacMed");
+  lines.push("buckeyetacmed.com");
+  var bodyStr = lines.join("\n");
+  window.location.href = "mailto:" + emailAddr + "?subject=" + encodeURIComponent("Medical Readiness Action Plan (MRAP) - " + client) + "&body=" + encodeURIComponent(bodyStr);
+  closeEmailModal();
+}
+
+
+window.addEventListener('load', function() {
+  init();
+});
+</script>
+
+<div class="modal-overlay" id="emailModal">
+  <div class="modal-box">
+    <div class="modal-title">Email Report to Client</div>
+    <div class="modal-sub">This will open your email app with the report summary pre-filled and addressed to the client.</div>
+    <label>Client Email Address</label>
+    <input type="text" id="clientEmailInput" placeholder="client@company.com" />
+    <div class="modal-btn-row">
+      <button class="modal-cancel-btn" onclick="closeEmailModal()">Cancel</button>
+      <button class="modal-send-btn" onclick="sendEmailToClient()">Open Email App</button>
+    </div>
+  </div>
+</div>
+<div id="printReport"></div>
+</body>
+</html>
